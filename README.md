@@ -141,6 +141,34 @@ Which matches the expected arithmetic result:
 
 **Critical path:** compare / subtract of a small value (7) and shifts → typically easy timing closure.
 
+
+### Verification
+
+The design was verified using a self-written Verilog testbench that exercises both functional correctness and interface behavior.
+Verification focused on the following aspects:
+
+* Basic functionality
+  * Correct quotient and remainder for representative values
+  * Comparison against expected mathematical results
+* Corner cases
+  * Input value 0
+  * Maximum input value (65,535)
+  * Values just below and just above multiples of 7
+* Handshake behavior
+  * start is accepted only in IDLE
+  * busy remains asserted throughout the full computation
+  * valid pulses for exactly one clock cycle at completion
+  * Output values remain stable after completion until the next operation
+* Timing behavior
+  * Fixed latency of 16 clock cycles from start acceptance to valid
+  * Deterministic behavior with no race conditions or combinational feedback paths
+* Simulation waveforms were inspected to confirm:
+  * Proper FSM state transitions
+  * Correct bit-by-bit evolution of the remainder and quotient
+  * Clean separation between control logic and datapath
+
+This verification approach ensured the design is functionally correct, deterministic, and suitable for synthesis and integration in larger FPGA systems.
+
 ### RTL Implementation Notes
 
 * All state and registers are implemented in a single always @(posedge clk) (fully synchronous RTL)
